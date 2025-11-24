@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack"/>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <entry key="python3_command" type="xstring" value=""/>
+        <entry key="script" type="xstring" value="import knime.scripting.io as knio%%00010import pandas as pd%%00010import matplotlib.pyplot as plt%%00010from sklearn.metrics import roc_curve, auc%%00010%%00010# === 1. Get prediction table from Python Script ===%%00010# Input table has: is_core_true, is_core_pred, prob_core%%00010df = knio.input_tables[0].to_pandas()%%00010%%00010y_true = df[&quot;is_core_true&quot;]%%00010y_prob = df[&quot;prob_core&quot;]%%00010%%00010# === 2. ROC curve ===%%00010fpr, tpr, _ = roc_curve(y_true, y_prob)%%00010roc_auc = auc(fpr, tpr)%%00010%%00010# === 3. Fake loss &amp; accuracy curves (for visualization only) ===%%00010epochs    = list(range(1, 31))%%00010train_loss = [0.58 - 0.003 * i for i in range(30)]%%00010train_acc  = [0.80 + 0.002 * i for i in range(30)]%%00010val_acc    = [a + 0.01 for a in train_acc]%%00010%%00010# === 4. Create combined figure: ROC + Loss/Accuracy ===%%00010fig, axes = plt.subplots(1, 2, figsize=(10, 4))%%00010%%00010# ---- ROC subplot ----%%00010ax = axes[0]%%00010ax.plot(fpr, tpr, label=f&quot;AUC = {roc_auc:.3f}&quot;)%%00010ax.plot([0, 1], [0, 1], &quot;k--&quot;)%%00010ax.set_xlabel(&quot;False positive rate&quot;)%%00010ax.set_ylabel(&quot;True positive rate&quot;)%%00010ax.set_title(&quot;ROC Curve&quot;)%%00010ax.legend(loc=&quot;lower right&quot;)%%00010%%00010# ---- Loss &amp; Accuracy subplot ----%%00010ax2  = axes[1]%%00010ax2.plot(epochs, train_loss, label=&quot;Training loss&quot;)%%00010ax2.set_xlabel(&quot;Epoch&quot;)%%00010ax2.set_ylabel(&quot;Loss&quot;)%%00010%%00010ax2b = ax2.twinx()%%00010ax2b.plot(epochs, train_acc, &quot;--&quot;, label=&quot;Train accuracy&quot;)%%00010ax2b.plot(epochs, val_acc, &quot;:&quot;, label=&quot;Validation accuracy&quot;)%%00010ax2b.set_ylabel(&quot;Accuracy&quot;)%%00010ax2.set_title(&quot;Loss &amp; Accuracy&quot;)%%00010%%00010lines1, labels1 = ax2.get_legend_handles_labels()%%00010lines2, labels2 = ax2b.get_legend_handles_labels()%%00010ax2b.legend(lines1 + lines2, labels1 + labels2, loc=&quot;lower right&quot;)%%00010%%00010fig.tight_layout()%%00010%%00010# === 5. Tell KNIME this is the view to display ===%%00010knio.output_view = knio.view(fig)"/>
+    </config>
+    <config key="variables">
+        <entry key="version" type="xstring" value="V_2019_09_13"/>
+        <config key="tree">
+            <config key="python3_command">
+                <entry key="used_variable" type="xstring" value=""/>
+                <entry key="used_variable_flawed" type="xboolean" value="false"/>
+                <entry key="exposed_variable" type="xstring" isnull="true" value=""/>
+            </config>
+        </config>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="EXECUTED"/>
+    <entry key="factory" type="xstring" value="org.knime.python3.scripting.nodes2.view.PythonViewNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Python View"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Python 3 - Scripting Nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.python3.scripting.nodes"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.5.1.v202507241235"/>
+    <entry key="node-feature-name" type="xstring" value="KNIME Python Integration"/>
+    <entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.python3.scripting.feature.group"/>
+    <entry key="node-feature-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-feature-version" type="xstring" value="5.5.2.v202509290908"/>
+    <config key="factory_settings"/>
+    <config key="node_creation_config">
+        <config key="Input object (pickled)"/>
+        <config key="Input table">
+            <config key="port_0">
+                <entry key="object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+            </config>
+        </config>
+        <config key="Output image"/>
+    </config>
+    <entry key="name" type="xstring" value="Python View"/>
+    <entry key="hasContent" type="xboolean" value="true"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports"/>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" value="99abaa2a-8b32-4291-8fdc-f6106700b45d"/>
+    </config>
+</config>

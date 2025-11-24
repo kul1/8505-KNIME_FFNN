@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack"/>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <entry key="python3_command" type="xstring" value=""/>
+        <entry key="script" type="xstring" value="import knime.scripting.io as knio%%00010import pandas as pd%%00010import numpy as np%%00010%%00010from sklearn.model_selection import train_test_split%%00010from sklearn.neural_network import MLPClassifier%%00010from sklearn.metrics import accuracy_score, classification_report%%00010%%00010# === 1. Read KNIME input table ===%%00010df = knio.input_tables[0].to_pandas()%%00010print(&quot;Python OK. Rows:&quot;, len(df))%%00010%%00010# === 2. Separate features and target ===%%00010# assume 'is_core' is already 0/1%%00010feature_cols = [c for c in df.columns if c != &quot;is_core&quot;]%%00010%%00010X = df[feature_cols].values.astype(&quot;float32&quot;)%%00010y = df[&quot;is_core&quot;].values.astype(&quot;int32&quot;)%%00010%%00010# === 3. Train / test split ===%%00010X_train, X_test, y_train, y_test = train_test_split(%%00010    X, y,%%00010    test_size=0.2,%%00010    random_state=42,%%00010    stratify=y%%00010)%%00010%%00010# === 4. Build FFNN model (MLP) ===%%00010mlp = MLPClassifier(%%00010    hidden_layer_sizes=(32, 16),  # 2 hidden layers%%00010    activation=&quot;relu&quot;,%%00010    solver=&quot;adam&quot;,%%00010    learning_rate_init=0.001,%%00010    max_iter=200,%%00010    random_state=42%%00010)%%00010%%00010mlp.fit(X_train, y_train)%%00010%%00010# === 5. Evaluate on test set ===%%00010y_prob = mlp.predict_proba(X_test)[:, 1]%%00010y_pred = (y_prob &gt;= 0.5).astype(&quot;int32&quot;)%%00010%%00010print(&quot;Test accuracy:&quot;, accuracy_score(y_test, y_pred))%%00010print(&quot;Classification report:\n&quot;,%%00010      classification_report(y_test, y_pred, digits=3))%%00010%%00010# === 6. Build output table for KNIME ===%%00010test_df = pd.DataFrame(X_test, columns=feature_cols)%%00010test_df[&quot;is_core_true&quot;] = y_test%%00010test_df[&quot;is_core_pred&quot;] = y_pred%%00010test_df[&quot;prob_core&quot;] = y_prob%%00010%%00010knio.output_tables[0] = knio.Table.from_pandas(test_df)"/>
+    </config>
+    <config key="variables">
+        <entry key="version" type="xstring" value="V_2019_09_13"/>
+        <config key="tree">
+            <config key="python3_command">
+                <entry key="used_variable" type="xstring" value=""/>
+                <entry key="used_variable_flawed" type="xboolean" value="false"/>
+                <entry key="exposed_variable" type="xstring" isnull="true" value=""/>
+            </config>
+        </config>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="EXECUTED"/>
+    <entry key="factory" type="xstring" value="org.knime.python3.scripting.nodes2.script.PythonScriptNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Python Script"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Python 3 - Scripting Nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.python3.scripting.nodes"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.5.1.v202507241235"/>
+    <entry key="node-feature-name" type="xstring" value="KNIME Python Integration"/>
+    <entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.python3.scripting.feature.group"/>
+    <entry key="node-feature-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-feature-version" type="xstring" value="5.5.2.v202509290908"/>
+    <config key="factory_settings"/>
+    <config key="node_creation_config">
+        <config key="Input object (pickled)"/>
+        <config key="Input table">
+            <config key="port_0">
+                <entry key="object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+            </config>
+        </config>
+        <config key="Output table">
+            <config key="port_0">
+                <entry key="object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+            </config>
+        </config>
+        <config key="Output image"/>
+        <config key="Output object (pickled)"/>
+    </config>
+    <entry key="name" type="xstring" value="Python Script"/>
+    <entry key="hasContent" type="xboolean" value="true"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+            <entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+            <entry key="port_object_summary" type="xstring" value="Rows: 30, Cols: 16"/>
+            <entry key="port_dir_location" type="xstring" value="port_1"/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" value="7537b8dd-7dde-4b1d-b3c8-4fdb57348b90"/>
+    </config>
+</config>

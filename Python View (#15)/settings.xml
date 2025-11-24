@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack"/>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <entry key="python3_command" type="xstring" value=""/>
+        <entry key="script" type="xstring" value="import knime.scripting.io as knio%%00010import pandas as pd%%00010import numpy as np%%00010import matplotlib.pyplot as plt%%00010%%00010from sklearn.model_selection import train_test_split%%00010from sklearn.neural_network import MLPClassifier%%00010from sklearn.metrics import roc_curve, auc, accuracy_score%%00010%%00010# === 1. Read KNIME table ===%%00010df = knio.input_tables[0].to_pandas()%%00010%%00010# 'is_core' is the target (0/1). All other columns are numeric features%%00010feature_cols = [c for c in df.columns if c != &quot;is_core&quot;]%%00010X = df[feature_cols].values.astype(&quot;float32&quot;)%%00010y = df[&quot;is_core&quot;].values.astype(&quot;int32&quot;)%%00010%%00010# === 2. Train / test split (same style as your Python Script) ===%%00010X_train, X_test, y_train, y_test = train_test_split(%%00010    X,%%00010    y,%%00010    test_size=0.2,%%00010    random_state=42,%%00010    stratify=y,%%00010)%%00010%%00010# === 3. Build MLP model and train with history ===%%00010n_epochs = 30%%00010%%00010mlp = MLPClassifier(%%00010    hidden_layer_sizes=(32, 16),   # 2 hidden layers%%00010    activation=&quot;relu&quot;,%%00010    solver=&quot;adam&quot;,%%00010    learning_rate_init=0.001,%%00010    max_iter=1,        # 1 iter per call – we loop manually%%00010    warm_start=True,   # keep weights between calls%%00010    random_state=42,%%00010)%%00010%%00010classes = np.unique(y_train)%%00010%%00010loss_curve = []%%00010train_acc_curve = []%%00010val_acc_curve = []%%00010%%00010for epoch in range(n_epochs):%%00010    # incremental training%%00010    mlp.partial_fit(X_train, y_train, classes=classes)%%00010%%00010    # record loss%%00010    loss_curve.append(mlp.loss_)%%00010%%00010    # record accuracies%%00010    y_train_pred = mlp.predict(X_train)%%00010    y_val_pred = mlp.predict(X_test)%%00010    train_acc_curve.append(accuracy_score(y_train, y_train_pred))%%00010    val_acc_curve.append(accuracy_score(y_test, y_val_pred))%%00010%%00010# === 4. ROC data from final model ===%%00010y_prob = mlp.predict_proba(X_test)[:, 1]%%00010fpr, tpr, _ = roc_curve(y_test, y_prob)%%00010roc_auc = auc(fpr, tpr)%%00010%%00010# === 5. Create combined figure: ROC + loss/accuracy ===%%00010fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))%%00010%%00010# --- ROC subplot ---%%00010ax1.plot(fpr, tpr, label=f&quot;AUC = {roc_auc:.3f}&quot;)%%00010ax1.plot([0, 1], [0, 1], &quot;k--&quot;)%%00010ax1.set_xlabel(&quot;False positive rate&quot;)%%00010ax1.set_ylabel(&quot;True positive rate&quot;)%%00010ax1.set_title(&quot;ROC Curve&quot;)%%00010ax1.legend(loc=&quot;lower right&quot;)%%00010%%00010# --- Loss + accuracy subplot ---%%00010epochs = np.arange(1, n_epochs + 1)%%00010%%00010ax2.plot(epochs, loss_curve, label=&quot;Training loss&quot;)%%00010ax2.set_xlabel(&quot;Epoch&quot;)%%00010ax2.set_ylabel(&quot;Loss&quot;)%%00010%%00010ax2b = ax2.twinx()%%00010ax2b.plot(epochs, train_acc_curve, &quot;--&quot;, label=&quot;Train accuracy&quot;)%%00010ax2b.plot(epochs, val_acc_curve, &quot;:&quot;, label=&quot;Validation accuracy&quot;)%%00010ax2.set_title(&quot;Loss &amp; Accuracy&quot;)%%00010%%00010# combined legend%%00010lines1, labels1 = ax2.get_legend_handles_labels()%%00010lines2, labels2 = ax2b.get_legend_handles_labels()%%00010ax2b.legend(lines1 + lines2, labels1 + labels2, loc=&quot;center right&quot;)%%00010%%00010fig.tight_layout()%%00010%%00010# === 6. Hand the figure back to KNIME ===%%00010knio.output_view = knio.view(fig)"/>
+    </config>
+    <config key="variables">
+        <entry key="version" type="xstring" value="V_2019_09_13"/>
+        <config key="tree">
+            <config key="python3_command">
+                <entry key="used_variable" type="xstring" value=""/>
+                <entry key="used_variable_flawed" type="xboolean" value="false"/>
+                <entry key="exposed_variable" type="xstring" isnull="true" value=""/>
+            </config>
+        </config>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="EXECUTED"/>
+    <entry key="factory" type="xstring" value="org.knime.python3.scripting.nodes2.view.PythonViewNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Python View"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME Python 3 - Scripting Nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.python3.scripting.nodes"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="5.5.1.v202507241235"/>
+    <entry key="node-feature-name" type="xstring" value="KNIME Python Integration"/>
+    <entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.python3.scripting.feature.group"/>
+    <entry key="node-feature-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-feature-version" type="xstring" value="5.5.2.v202509290908"/>
+    <config key="factory_settings"/>
+    <config key="node_creation_config">
+        <config key="Input object (pickled)"/>
+        <config key="Input table">
+            <config key="port_0">
+                <entry key="object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+            </config>
+        </config>
+        <config key="Output image"/>
+    </config>
+    <entry key="name" type="xstring" value="Python View"/>
+    <entry key="hasContent" type="xboolean" value="true"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports"/>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" value="98ea3c4f-1f00-4a82-b177-39f86d9ca6c8"/>
+    </config>
+</config>
